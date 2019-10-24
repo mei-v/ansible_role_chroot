@@ -1,0 +1,29 @@
+---
+
+chroot_arch: i386
+chroot_base_dir: /srv/chroot
+chroot_conf_dir: /etc/schroot/chroot.d
+chroot_groups: users
+chroot_os: ubuntu
+chroot_users: xenial
+chroot_version: xenial
+chroot_debootstrap_mirror: http://archive.ubuntu.com/ubuntu
+
+chroot_fstab_mounts: []
+# - '/apps'
+
+chroot_apt_packages: []
+# - vim
+
+chroot_name: "{{ chroot_os }}-{{ chroot_version }}-{{ chroot_arch }}"
+chroot_description: "{{ chroot_name | replace('-',' ') }}"
+chroot_dir:  "{{ chroot_base_dir }}/{{ chroot_name }}"
+
+chroot_packages:
+  - debootstrap
+  - schroot
+  - xauth
+
+proxies_env:
+#  http_proxy:
+#  https_proxy:

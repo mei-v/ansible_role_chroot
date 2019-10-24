@@ -1,0 +1,85 @@
+---
+
+- name: define chroot_conf_file
+  set_fact:
+    chroot_conf_file: "{{ chroot_conf_dir }}/{{ chroot_name }}"
+  changed_when: False
+  become: no
+
+- name: create directory {{ chroot_dir }}
+  file:
+    path: "{{ chroot_dir }}"
+    state: directory
+    mode: 0755
+    owner: root
+    group: root
+  become: yes
+
+- name: "copy chroot config to {{ chroot_conf_file }}"
+  template:
+    src: templates/chroot.conf.j2
+    dest: "{{ chroot_conf_file }}"
+    mode: 0644
+    owner: root
+    group: root
+  become: yes
+
+- name: create chroot mount directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0755
+    owner: root
+    group: root
+  with_items: "{{ chroot_fstab_mounts }}"
+  when: chroot_fstab_mounts | length > 0
+  become: yes
+
+- name: verify mounts in /etc/schroot/default/fstab
+  lineinfile:
+    path: /etc/schroot/default/fstab
+    regexp: "^{{ item }}"
+    line: "{{ item }}  {{ item }}  none  rw,bind  0  0"
+    owner: root
+    group: root
+    mode: '0644'
+  with_items: "{{ chroot_fstab_mounts }}"
+  when: chroot_fstab_mounts | length > 0
+  become: yes
+
+- name: start schroot
+  service:
+    name: schroot
+    state: started
+  become: yes
+
+- name: schroot
+  command: schroot -l
+  changed_when: False
+
+- name: verify debootstrap
+  stat:
+    path: "{{ chroot_dir }}/bin/bash"
+  register: debootstrap_stat
+
+- name: debootstrap
+  command: >
+    debootstrap --no-check-gpg --variant=buildd
+    --arch {{ chroot_arch }}
+    {{ chroot_version }}
+    {{ chroot_dir }}
+    {{ chroot_debootstrap_mirror }}
+  environment: "{{ proxies_env }}"
+  changed_when: False
+  become: yes
+  when: not debootstrap_stat.stat.exists
+
+- name: install packages in chroot
+  command: >
+    schroot
+    -c {{ chroot_name }}
+    -u root
+    -- apt-get install -y {{ item }}
+  with_items: "{{ chroot_apt_packages }}"
+  when: chroot_apt_packages | length > 0
+  become: yes
