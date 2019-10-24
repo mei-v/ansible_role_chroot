@@ -1,0 +1,10 @@
+{{ ansible_managed | comment }}
+[{{ chroot_name }}]
+description={{ chroot_description }}
+directory={{ chroot_dir }}
+type=directory
+{% if chroot_arch == 'i386' %}
+personality=linux32
+{% endif %}
+users={{ chroot_users }}
+groups={{ chroot_groups }}

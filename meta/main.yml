@@ -1,0 +1,16 @@
+galaxy_info:
+  author: Osiris Alejandro Gomez
+  role_name: chroot
+  description: Ansible role for install and configure chroot enviroment
+  company: gcoop Cooperativa de Software Libre
+  license: GPLv3
+  min_ansible_version: 2.7.1
+  platforms:
+    - name: ubuntu
+      versions:
+        - bionic
+  galaxy_tags:
+    - chroot
+    - schroot
+
+dependencies: []

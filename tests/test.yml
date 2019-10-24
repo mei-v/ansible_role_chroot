@@ -1,0 +1,7 @@
+---
+
+- name: Install and configure chroot enviroment
+  hosts: [test]
+
+  roles:
+    - role: gcoop-libre.chroot

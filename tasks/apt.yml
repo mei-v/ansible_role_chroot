@@ -1,0 +1,20 @@
+---
+
+- name: add {{ chroot_arch }} architecture
+  command: dpkg --add-architecture {{ chroot_arch }}
+  become: yes
+  changed_when: False
+
+- name: Update APT
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+  changed_when: False
+  become: yes
+
+- name: Install chroot packages
+  apt:
+    name: "{{ chroot_packages }}"
+    state: present
+  become: yes
+  when: chroot_packages | length > 0
