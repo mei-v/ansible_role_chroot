@@ -1,3 +1,5 @@
 *.retry
 tests/plugins
 tests/roles
+__pycache__/
+.mypy_cache/
