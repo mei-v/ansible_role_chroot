@@ -3,7 +3,6 @@
 - name: define chroot_conf_file
   set_fact:
     chroot_conf_file: "{{ chroot_conf_dir }}/{{ chroot_name }}"
-  changed_when: False
   become: no
 
 - name: create directory {{ chroot_dir }}
